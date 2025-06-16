@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการสาธารณูปโภคเทศบาลตำบลท่าเสา</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 900px; /* Wider container */
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar {
+            background-color: #4f46e5; /* Indigo 600 */
+            color: white;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+        }
+        .sidebar-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+        .sidebar-button:hover {
+            background-color: #4338ca; /* Indigo 700 */
+        }
+        .content {
+            padding: 24px;
+            flex-grow: 1;
+        }
+        .section-title {
+            font-size: 2rem; /* h2 equivalent */
+            font-weight: 700; /* Extra bold */
+            color: #1a202c; /* Dark gray */
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0; /* Light gray border */
+            padding-bottom: 12px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4a5568; /* Gray 700 */
+        }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e0; /* Gray 300 */
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #2d3748; /* Gray 800 */
+            box-sizing: border-box; /* Include padding in width */
+        }
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* Indigo 600 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* Indigo 700 */
+        }
+        .btn-secondary {
+            background-color: #e2e8f0; /* Gray 200 */
+            color: #2d3748; /* Gray 800 */
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e0; /* Gray 300 */
+        }
+        .card {
+            background-color: #f7fafc; /* Gray 100 */
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .card-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 9999px; /* Pill shape */
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .badge-pending {
+            background-color: #fbd38d; /* Orange 200 */
+            color: #92400e; /* Orange 900 */
+        }
+        .badge-completed {
+            background-color: #9ae6b4; /* Green 200 */
+            color: #276749; /* Green 900 */
+        }
+        .badge-rejected {
+            background-color: #feb2b2; /* Red 200 */
+            color: #9b2c2c; /* Red 900 */
+        }
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #cbd5e0;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .message-modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.show .message-modal-content {
+            transform: translateY(0);
+        }
+        .message-modal-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        .message-modal-content p {
+            color: #4a5568;
+            margin-bottom: 25px;
+        }
+        .message-modal-content button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .message-modal-content button:hover {
+            background-color: #4338ca;
+        }
+        /* Message modal status colors */
+        .message-modal-content.success h3 { color: #28a745; } /* Green */
+        .message-modal-content.error h3 { color: #dc3545; } /* Red */
+        .message-modal-content.info h3 { color: #007bff; }  /* Blue */
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+            .sidebar {
+                flex-basis: 250px;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1 class="text-2xl font-bold mb-4">ระบบจัดการสาธารณูปโภค</h1>
+            <div class="sidebar-button" onclick="showView('reportFormView')">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span>รายงานปัญหาใหม่ (ปชช.)</span>
+            </div>
+            <div class="sidebar-button" onclick="showView('checkStatusView')">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l-3 2.25M7.5 14.25l3-2.25m-3 2.25L3 17.25M17.25 10.5h.007m0 2.25h.007m0 2.25h.007M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span>ตรวจสอบสถานะ (ปชช.)</span>
+            </div>
+            <div class="sidebar-button" onclick="showView('loginView')">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12 18.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 6.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM17.25 10.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12 14.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 10.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15.75 14.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12 6.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 14.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                </svg>
+                <span>สำหรับเจ้าหน้าที่</span>
+            </div>
+            <!-- ปุ่มและส่วนสำหรับเจ้าหน้าที่เท่านั้น -->
+            <div id="officialOnlyButtons" class="hidden">
+                 <div class="sidebar-button" onclick="showView('reportListView')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-3.75 5.25h3.75M8.25 17.25h12M6 10.5V20.25a2.25 2.25 0 0 1-2.25 2.25H2.25a2.25 2.25 0 0 1-2.25-2.25V10.5M6 10.5a2.25 2.25 0 0 0-2.25-2.25H2.25a2.25 2.25 0 0 0-2.25 2.25M6 10.5V3.75a2.25 2.25 0 0 1 2.25-2.25h13.5a2.25 2.25 0 0 1 2.25 2.25v6.75m-3.75 0a2.25 2.25 0 0 1-2.25-2.25v-2.25" />
+                    </svg>
+                    <span>รายการรายงาน (เจ้าหน้าที่)</span>
+                </div>
+                <div class="sidebar-button" onclick="handleLogout()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3H21" />
+                    </svg>
+                    <span>ออกจากระบบ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content flex-grow">
+            <!-- Report Form View (Public Access) -->
+            <div id="reportFormView" class="view">
+                <h2 class="section-title">รายงานปัญหาใหม่</h2>
+                <form id="reportForm" onsubmit="event.preventDefault(); createOrUpdateReport();">
+                    <input type="hidden" id="reportId" value="">
+                    <!-- Case ID (for Officials when editing) -->
+                    <div id="caseIdFormGroup" class="form-group hidden">
+                        <label for="caseIdDisplay" class="form-label">เลขเคส:</label>
+                        <input type="text" id="caseIdDisplay" class="form-input bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reportType" class="form-label">ประเภทปัญหา:</label>
+                        <select id="reportType" class="form-select" required>
+                            <option value="">เลือกประเภทปัญหา</option>
+                            <option value="ไฟฟ้าสาธารณะ">ไฟฟ้าสาธารณะ</option>
+                            <option value="น้ำประปา">น้ำประปา</option>
+                            <option value="ถนน/ทางเท้า">ถนน/ทางเท้า</option>
+                            <option value="ขยะ/สิ่งปฏิกูล">ขยะ/สิ่งปฏิกูล</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportDescription" class="form-label">รายละเอียดปัญหา:</label>
+                        <textarea id="reportDescription" class="form-textarea" placeholder="โปรดระบุรายละเอียดปัญหาให้ชัดเจน (อย่างน้อย 20 ตัวอักษร)" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportLocation" class="form-label">ตำแหน่งที่ตั้ง (พิกัด):</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="reportLocation" class="form-input flex-grow" placeholder="ละติจูด, ลองจิจูด (เช่น 13.7563, 100.5018)" required>
+                            <button type="button" class="btn-secondary px-4 py-2" onclick="getCurrentLocation()">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 inline-block align-middle">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="https://th.bing.com/th/id/OIP._4kFb3cax89ejouRXhshbAHaHa?w=195&h=195&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" />
+                                </svg>
+                                <span>ตำแหน่งปัจจุบัน</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportDate" class="form-label">วันที่เกิดปัญหา:</label>
+                        <input type="date" id="reportDate" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reporterName" class="form-label">ชื่อผู้รายงาน :</label>
+                        <input type="text" id="reporterName" class="form-input" placeholder="ชื่อ-นามสกุล" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactInfo" class="form-label">ข้อมูลติดต่อ :</label>
+                        <input type="text" id="contactInfo" class="form-input" placeholder="เบอร์ติดต่อ" required>
+                    </div>
+                    <!-- สถานะรายงาน - สำหรับเจ้าหน้าที่เท่านั้น -->
+                    <div id="statusFormGroup" class="form-group hidden">
+                        <label for="reportStatus" class="form-label">สถานะ (สำหรับเจ้าหน้าที่):</label>
+                        <select id="reportStatus" class="form-select">
+                            <option value="pending">รอดำเนินการ</option>
+                            <option value="completed">ดำเนินการแล้วเสร็จ</option>
+                            <option value="rejected">ถูกปฏิเสธ</option>
+                        </select>
+                    </div>
+                    <!-- รูปภาพประกอบปัญหา - สำหรับประชาชนเท่านั้น -->
+                    <div id="publicImagesFormGroup" class="form-group">
+                        <label for="reportImages" class="form-label">รูปภาพประกอบปัญหา (ไม่บังคับ):</label>
+                        <input type="file" id="reportImages" class="form-input" accept="image/*" multiple onchange="previewImages(event, 'public')">
+                        <div id="imagePreviewContainer" class="image-preview-container"></div>
+                    </div>
+                    <!-- รูปภาพแก้ไขแล้ว - สำหรับเจ้าหน้าที่เท่านั้น -->
+                    <div id="resolutionImagesFormGroup" class="form-group hidden">
+                        <label for="resolutionImages" class="form-label">รูปภาพแสดงการแก้ไขแล้ว (ไม่บังคับ):</label>
+                        <input type="file" id="resolutionImages" class="form-input" accept="image/*" multiple onchange="previewImages(event, 'resolution')">
+                        <div id="resolutionImagePreviewContainer" class="image-preview-container"></div>
+                    </div>
+
+                    <div class="flex gap-4 mt-6">
+                        <button type="submit" class="btn-primary">บันทึกรายงาน</button>
+                        <button type="button" class="btn-secondary" onclick="clearForm()">ล้างข้อมูล</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Report List View (Official Only) -->
+            <div id="reportListView" class="view hidden">
+                <h2 class="section-title">รายการรายงาน</h2>
+                <div id="reportsList" class="space-y-4">
+                    <!-- Reports will be loaded here -->
+                </div>
+                <p id="noReportsMessage" class="text-gray-600 mt-4 hidden">ยังไม่มีรายงานในระบบ.</p>
+            </div>
+
+            <!-- Login View for Officials -->
+            <div id="loginView" class="view hidden">
+                <h2 class="section-title">เข้าสู่ระบบสำหรับเจ้าหน้าที่</h2>
+                <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+                    <div class="form-group">
+                        <label for="username" class="form-label">ชื่อผู้ใช้งาน:</label>
+                        <input type="text" id="username" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="form-label">รหัสผ่าน:</label>
+                        <input type="password" id="password" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn-primary mt-4">เข้าสู่ระบบ</button>
+                </form>
+            </div>
+
+            <!-- Check Status View (Public Access) -->
+            <div id="checkStatusView" class="view hidden">
+                <h2 class="section-title">ตรวจสอบสถานะรายงาน</h2>
+                <div class="form-group">
+                    <label for="checkCaseId" class="form-label">กรอกเลขเคส (เช่น EL123):</label>
+                    <input type="text" id="checkCaseId" class="form-input uppercase" placeholder="กรอกเลขเคสของคุณ" required>
+                </div>
+                <button type="button" class="btn-primary" onclick="checkReportStatus()">ตรวจสอบ</button>
+                <div id="statusResult" class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg hidden">
+                    <!-- Status details will be displayed here -->
+                </div>
+                <div id="statusError" class="mt-4 p-4 bg-red-50 text-red-800 border border-red-200 rounded-lg hidden">
+                    <!-- Error message for status check -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Message Modal Structure -->
+    <div id="messageModalOverlay" class="modal-overlay">
+        <div id="messageModalContent" class="message-modal-content">
+            <h3 id="messageModalTitle"></h3>
+            <p id="messageModalText"></p>
+            <button onclick="closeMessageModal()">ตกลง</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // URL สำหรับ Google Apps Script Web App
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxIZMBfXeyb4mdJ91Yftoy3RfP7n7-vqE_R7-8Lmp69c53tYZzNet1zzwHONz2uMcBLtw/exec';
+
+        let reports = []; // Local storage for reports
+        let currentPublicImages = []; // To store base64 encoded images from public
+        let currentResolutionImages = []; // To store base64 encoded images from official resolution
+        let isLoggedIn = false; // Official login status
+
+        // Official user credentials (for demonstration; consider more secure methods in production)
+        const OFFICIAL_CREDENTIALS = {
+            username: '1234', // <<-- **เปลี่ยนเป็น username ที่ต้องการ**
+            password: '1234' // <<-- **เปลี่ยนเป็น password ที่ต้องการ (อย่าใช้รหัสผ่านง่ายๆ)**
+        };
+
+        // Mapping for problem types to English abbreviations for Case ID
+        const PROBLEM_TYPE_ABBR = {
+            'ไฟฟ้าสาธารณะ': 'EL',
+            'น้ำประปา': 'WA',
+            'ถนน/ทางเท้า': 'RO',
+            'ขยะ/สิ่งปฏิกูล': 'TR',
+            'อื่นๆ': 'OT'
+        };
+
+        // --- UI Management ---
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+
+            // Specific logic for each view
+            if (viewId === 'reportListView') {
+                if (isLoggedIn) {
+                    loadReports(); // Reload reports when navigating to list view (only for officials)
+                } else {
+                    showView('loginView'); // Redirect to login if not logged in
+                    showMessage('เข้าถึงถูกปฏิเสด', 'กรุณาเข้าสู่ระบบในฐานะเจ้าหน้าที่เพื่อดูรายการรายงาน', 'error');
+                }
+            } else if (viewId === 'reportFormView') {
+                // Clear form if switching to form view without editing a specific report
+                if (document.getElementById('reportId').value !== '') {
+                    clearForm();
+                }
+                updateFormVisibility(); // Adjust form fields based on login status and if editing
+            } else if (viewId === 'checkStatusView') {
+                document.getElementById('checkCaseId').value = '';
+                document.getElementById('statusResult').classList.add('hidden');
+                document.getElementById('statusError').classList.add('hidden');
+            }
+        }
+
+        function showMessage(title, text, type = 'info') {
+            const modalOverlay = document.getElementById('messageModalOverlay');
+            const modalContent = document.getElementById('messageModalContent');
+            document.getElementById('messageModalTitle').textContent = title;
+            document.getElementById('messageModalText').textContent = text;
+
+            modalContent.classList.remove('success', 'error', 'info');
+            modalContent.classList.add(type);
+
+            modalOverlay.classList.add('show');
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModalOverlay').classList.remove('show');
+        }
+
+        // --- Authentication ---
+        function handleLogin() {
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
+
+            if (usernameInput === OFFICIAL_CREDENTIALS.username && passwordInput === OFFICIAL_CREDENTIALS.password) {
+                isLoggedIn = true;
+                localStorage.setItem('isLoggedIn', 'true');
+                updateUIForUserType();
+                showView('reportListView'); // Show report list for officials
+                showMessage('เข้าสู่ระบบสำเร็จ', 'ยินดีต้อนรับเจ้าหน้าที่!', 'success');
+            } else {
+                showMessage('เข้าสู่ระบบไม่สำเร็จ', 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง', 'error');
+            }
+        }
+
+        function handleLogout() {
+            isLoggedIn = false;
+            localStorage.removeItem('isLoggedIn');
+            updateUIForUserType();
+            showView('reportFormView'); // Redirect to public report form
+            showMessage('ออกจากระบบ', 'คุณได้ออกจากระบบเรียบร้อยแล้ว', 'info');
+            clearForm(); // Clear form state
+        }
+
+        // Adjusts UI elements based on user type (public/official)
+        function updateUIForUserType() {
+            const statusFormGroup = document.getElementById('statusFormGroup');
+            const officialOnlyButtons = document.getElementById('officialOnlyButtons');
+            const caseIdFormGroup = document.getElementById('caseIdFormGroup');
+
+            if (isLoggedIn) {
+                statusFormGroup.classList.remove('hidden');
+                officialOnlyButtons.classList.remove('hidden');
+                caseIdFormGroup.classList.remove('hidden'); // Show Case ID field (read-only) for officials
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            } else {
+                statusFormGroup.classList.add('hidden');
+                officialOnlyButtons.classList.add('hidden');
+                caseIdFormGroup.classList.add('hidden'); // Hide Case ID field for public
+                document.querySelector('#reportForm button[type="submit"]').textContent = 'บันทึกรายงาน';
+            }
+            updateFormVisibility(); // Ensure correct image inputs are shown/hidden
+            renderReports(); // Re-render reports to show/hide edit/delete buttons
+        }
+
+        // Adjusts form fields visibility based on whether it's a new report or an edit, and user type
+        function updateFormVisibility() {
+            const reportId = document.getElementById('reportId').value;
+            const publicImagesFormGroup = document.getElementById('publicImagesFormGroup');
+            const resolutionImagesFormGroup = document.getElementById('resolutionImagesFormGroup');
+            const caseIdDisplay = document.getElementById('caseIdDisplay');
+            const reportFormSubmitButton = document.querySelector('#reportForm button[type="submit"]');
+
+            if (reportId && isLoggedIn) { // Official editing an existing report
+                publicImagesFormGroup.classList.add('hidden'); // Hide public image upload
+                resolutionImagesFormGroup.classList.remove('hidden'); // Show resolution image upload
+                caseIdDisplay.classList.remove('hidden'); // Show case ID display
+                reportFormSubmitButton.textContent = 'อัปเดตรายงาน';
+            } else if (!reportId && isLoggedIn) { // Official creating a new report (should not happen based on current flow, but for safety)
+                publicImagesFormGroup.classList.remove('hidden');
+                resolutionImagesFormGroup.classList.add('hidden');
+                caseIdDisplay.classList.add('hidden');
+                reportFormSubmitButton.textContent = 'บันทึกรายงาน';
+            } else { // Public user (new report or viewing)
+                publicImagesFormGroup.classList.remove('hidden'); // Show public image upload
+                resolutionImagesFormGroup.classList.add('hidden'); // Hide resolution image upload
+                caseIdDisplay.classList.add('hidden'); // Hide case ID display
+                reportFormSubmitButton.textContent = 'บันทึกรายงาน';
+            }
+        }
+
+
+        // --- Geolocation ---
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    document.getElementById('reportLocation').value = `${lat}, ${lon}`;
+                    showMessage('ตำแหน่งที่ตั้ง', 'ได้รับพิกัดตำแหน่งปัจจุบันแล้ว', 'success');
+                }, (error) => {
+                    console.error('Error getting location:', error);
+                    showMessage('ข้อผิดพลาด', 'ไม่สามารถเข้าถึงตำแหน่งปัจจุบันได้: ' + error.message, 'error');
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                showMessage('เบราว์เซอร์ไม่รองรับ', 'เบราว์เซอร์ของคุณไม่รองรับ Geolocation', 'error');
+            }
+        }
+
+        // --- Image Preview ---
+        function previewImages(event, type) {
+            const previewContainerId = (type === 'public') ? 'imagePreviewContainer' : 'resolutionImagePreviewContainer';
+            const targetArray = (type === 'public') ? currentPublicImages : currentResolutionImages;
+
+            const previewContainer = document.getElementById(previewContainerId);
+            previewContainer.innerHTML = ''; // Clear previous previews
+            targetArray.length = 0; // Clear previous images data (using length = 0 to retain reference)
+
+            const files = event.target.files;
+            if (files) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.classList.add('image-preview');
+                            previewContainer.appendChild(img);
+                            targetArray.push(e.target.result); // Store base64 string
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            }
+        }
+
+        // --- Data Management (Local Storage) ---
+        function loadReports() {
+            const storedReports = localStorage.getItem('reports');
+            if (storedReports) {
+                reports = JSON.parse(storedReports);
+            } else {
+                reports = [];
+            }
+            renderReports();
+        }
+
+        function saveReports() {
+            localStorage.setItem('reports', JSON.stringify(reports));
+            renderReports(); // Update list after saving
+        }
+
+        function generateUniqueId() {
+            // This is a temporary UUID for client-side tracking before Apps Script assigns Case ID
+            return 'temp-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function clearForm() {
+            document.getElementById('reportId').value = ''; // internal UUID
+            document.getElementById('caseIdDisplay').value = ''; // Case ID for display
+            document.getElementById('reportType').value = '';
+            document.getElementById('reportDescription').value = '';
+            document.getElementById('reportLocation').value = '';
+            document.getElementById('reportDate').value = '';
+            document.getElementById('reporterName').value = '';
+            document.getElementById('contactInfo').value = '';
+            document.getElementById('reportStatus').value = 'pending'; // Default status
+            document.getElementById('reportImages').value = ''; // Clear public file input
+            document.getElementById('imagePreviewContainer').innerHTML = '';
+            document.getElementById('resolutionImages').value = ''; // Clear resolution file input
+            document.getElementById('resolutionImagePreviewContainer').innerHTML = '';
+
+            currentPublicImages = []; // Clear image data
+            currentResolutionImages = []; // Clear image data
+
+            updateFormVisibility(); // Reset visibility of image inputs
+        }
+
+        function createOrUpdateReport() {
+            const reportId = document.getElementById('reportId').value; // This will be UUID for new, or UUID of existing for edit
+            const reportType = document.getElementById('reportType').value;
+            const reportDescription = document.getElementById('reportDescription').value;
+            const reportLocation = document.getElementById('reportLocation').value;
+            const reportDate = document.getElementById('reportDate').value;
+            const reporterName = document.getElementById('reporterName').value;
+            const contactInfo = document.getElementById('contactInfo').value;
+            const reportStatus = document.getElementById('reportStatus').value;
+
+            // --- Validation ---
+            if (reportDescription.length < 20) {
+                showMessage('ข้อมูลไม่ครบถ้วน', 'รายละเอียดปัญหาต้องมีอย่างน้อย 20 ตัวอักษร', 'error');
+                return;
+            }
+            if (reporterName.length < 6) {
+                showMessage('ข้อมูลไม่ครบถ้วน', 'ชื่อผู้รายงานต้องมีอย่างน้อย 6 ตัวอักษร', 'error');
+                return;
+            }
+            if (contactInfo.length < 10) {
+                showMessage('ข้อมูลไม่ครบถ้วน', 'ข้อมูลติดต่อต้องมีอย่างน้อย 10 ตัวอักษร', 'error');
+                return;
+            }
+            const locationRegex = /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/; // Basic latitude, longitude format
+            if (!locationRegex.test(reportLocation)) {
+                showMessage('ข้อมูลไม่ถูกต้อง', 'รูปแบบพิกัดไม่ถูกต้อง (ตัวอย่าง: 13.7563, 100.5018)', 'error');
+                return;
+            }
+            // --- End Validation ---
+
+            // Determine initial status based on user type
+            const statusToSet = isLoggedIn ? reportStatus : 'pending';
+
+            const reportDataToSend = {
+                id: reportId || generateUniqueId(), // Use existing ID or generate a temp one
+                caseId: document.getElementById('caseIdDisplay').value || '', // Case ID from Apps Script, or empty for new public report
+                reportType,
+                reportDescription,
+                reportLocation,
+                reportDate,
+                reporterName,
+                contactInfo,
+                status: statusToSet,
+                publicImages: currentPublicImages, // Images from public submission
+                resolutionImages: currentResolutionImages, // Images from official resolution
+                timestamp: new Date().toISOString(),
+            };
+
+            let isNewReportSubmission = false; // Flag for Apps Script to send email
+
+            if (reportId) { // Editing an existing report (by official)
+                const index = reports.findIndex(r => r.id === reportId);
+                if (index > -1) {
+                    reports[index] = { ...reports[index], ...reportDataToSend }; // Merge updates
+                    showMessage('อัปเดตสำเร็จ', 'รายงานถูกอัปเดตเรียบร้อยแล้ว', 'success');
+                }
+            } else { // New report (by public)
+                isNewReportSubmission = true;
+                reports.push(reportDataToSend); // Add to local storage with temp ID initially
+                showMessage('กำลังส่งรายงาน...', 'โปรดรอสักครู่ ระบบกำลังส่งข้อมูล', 'info');
+            }
+
+            saveReports();
+            clearForm(); // Clear form after submission/update
+
+            // *** Send report data to Google Apps Script Web App ***
+            // Include isNewReport flag to trigger email for new public submissions
+            sendReportToAppsScript({
+                ...reportDataToSend,
+                isNewReport: isNewReportSubmission
+            });
+        }
+
+        function editReport(id) {
+            if (!isLoggedIn) {
+                showMessage('เข้าถึงถูกปฏิเสธ', 'คุณไม่มีสิทธิ์แก้ไขรายงานนี้ กรุณาเข้าสู่ระบบในฐานะเจ้าหน้าที่', 'error');
+                return;
+            }
+
+            const report = reports.find(r => r.id === id);
+            if (report) {
+                document.getElementById('reportId').value = report.id;
+                document.getElementById('caseIdDisplay').value = report.caseId || ''; // Set Case ID
+                document.getElementById('reportType').value = report.reportType;
+                document.getElementById('reportDescription').value = report.reportDescription;
+                document.getElementById('reportLocation').value = report.reportLocation || '';
+                document.getElementById('reportDate').value = report.reportDate;
+                document.getElementById('reporterName').value = report.reporterName;
+                document.getElementById('contactInfo').value = report.contactInfo;
+                document.getElementById('reportStatus').value = report.status;
+
+                // Load public images for display (read-only for officials)
+                document.getElementById('imagePreviewContainer').innerHTML = '';
+                currentPublicImages = report.publicImages || [];
+                currentPublicImages.forEach(imgBase64 => {
+                    const img = document.createElement('img');
+                    img.src = imgBase64;
+                    img.classList.add('image-preview');
+                    document.getElementById('imagePreviewContainer').appendChild(img);
+                });
+
+                // Load resolution images for editing
+                document.getElementById('resolutionImagePreviewContainer').innerHTML = '';
+                currentResolutionImages = report.resolutionImages || [];
+                currentResolutionImages.forEach(imgBase64 => {
+                    const img = document.createElement('img');
+                    img.src = imgBase64;
+                    img.classList.add('image-preview');
+                    document.getElementById('resolutionImagePreviewContainer').appendChild(img);
+                });
+
+                updateFormVisibility(); // Show appropriate image inputs and Case ID field
+
+                showView('reportFormView'); // Navigate back to the form
+            }
+        }
+
+        function deleteReport(id) {
+            if (!isLoggedIn) {
+                showMessage('เข้าถึงถูกปฏิเสธ', 'คุณไม่มีสิทธิ์ลบรายงานนี้ กรุณาเข้าสู่ระบบในฐานะเจ้าหน้าที่', 'error');
+                return;
+            }
+            if (confirm('คุณต้องการลบรายงานนี้หรือไม่?')) {
+                reports = reports.filter(r => r.id !== id);
+                saveReports();
+                showMessage('ลบสำเร็จ', 'รายงานถูกลบเรียบร้อยแล้ว', 'success');
+                if (document.getElementById('reportId').value === id) {
+                    clearForm();
+                }
+                // TODO: Send delete request to Apps Script if persistent backend storage is used
+            }
+        }
+
+        function renderReports() {
+            const reportsListDiv = document.getElementById('reportsList');
+            reportsListDiv.innerHTML = ''; // Clear current list
+
+            if (reports.length === 0) {
+                document.getElementById('noReportsMessage').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('noReportsMessage').classList.add('hidden');
+            }
+
+            // Sort reports from newest to oldest by timestamp
+            const sortedReports = [...reports].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            sortedReports.forEach(report => {
+                const reportCard = document.createElement('div');
+                reportCard.classList.add('card');
+                const statusClass = {
+                    'pending': 'badge-pending',
+                    'completed': 'badge-completed',
+                    'rejected': 'badge-rejected'
+                }[report.status] || 'badge-pending';
+
+                const displayDate = report.reportDate ? new Date(report.reportDate).toLocaleDateString('th-TH', {
+                    day: 'numeric', month: 'long', year: 'numeric'
+                }) : 'ไม่มีวันที่';
+
+                reportCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="card-title">${report.caseId ? `เลขเคส: ${report.caseId} - ` : ''}${report.reportType} - ${displayDate}</h3>
+                        <span class="badge ${statusClass}">${report.status === 'pending' ? 'รอดำเนินการ' : report.status === 'completed' ? 'แล้วเสร็จ' : 'ถูกปฏิเสธ'}</span>
+                    </div>
+                    <p class="text-gray-700 mb-2">${report.reportDescription}</p>
+                    <p class="text-gray-600 text-sm">ตำแหน่ง: <a href="https://maps.google.com/?q=${report.reportLocation}" target="_blank" class="text-blue-600 hover:underline">${report.reportLocation}</a></p>
+                    ${report.reporterName ? `<p class="text-gray-600 text-sm">ผู้รายงาน: ${report.reporterName}</p>` : ''}
+                    ${report.contactInfo ? `<p class="text-gray-600 text-sm">ติดต่อ: ${report.contactInfo}</p>` : ''}
+                    
+                    <div class="mt-3">
+                        <p class="font-semibold text-gray-700">รูปภาพปัญหา:</p>
+                        <div class="image-preview-container mt-1">
+                            ${(report.publicImages && report.publicImages.length > 0) ?
+                                report.publicImages.map(img => `<img src="${img}" class="image-preview" alt="รูปภาพปัญหา">`).join('')
+                                : '<p class="text-gray-500 text-sm">ไม่มีรูปภาพปัญหา</p>'}
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="font-semibold text-gray-700">รูปภาพการแก้ไข:</p>
+                        <div class="image-preview-container mt-1">
+                            ${(report.resolutionImages && report.resolutionImages.length > 0) ?
+                                report.resolutionImages.map(img => `<img src="${img}" class="image-preview" alt="รูปภาพการแก้ไข">`).join('')
+                                : '<p class="text-gray-500 text-sm">ยังไม่มีรูปภาพการแก้ไข</p>'}
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 mt-4" id="reportActions-${report.id}">
+                        <!-- Edit/Delete buttons dynamically added -->
+                    </div>
+                `;
+                reportsListDiv.appendChild(reportCard);
+
+                // Add edit/delete buttons only if logged in
+                const reportActionsDiv = document.getElementById(`reportActions-${report.id}`);
+                if (isLoggedIn) {
+                    reportActionsDiv.innerHTML = `
+                        <button class="btn-primary py-2 px-4 text-sm" onclick="editReport('${report.id}')">แก้ไข</button>
+                        <button class="btn-secondary py-2 px-4 text-sm" onclick="deleteReport('${report.id}')">ลบ</button>
+                    `;
+                }
+            });
+        }
+
+        // --- Apps Script Integration (for Public Status Check) ---
+        async function checkReportStatus() {
+            const checkCaseIdInput = document.getElementById('checkCaseId');
+            const caseId = checkCaseIdInput.value.trim().toUpperCase(); // Convert to uppercase for consistency
+            const statusResultDiv = document.getElementById('statusResult');
+            const statusErrorDiv = document.getElementById('statusError');
+
+            statusResultDiv.classList.add('hidden');
+            statusResultDiv.innerHTML = '';
+            statusErrorDiv.classList.add('hidden');
+            statusErrorDiv.textContent = '';
+
+            if (!caseId) {
+                showMessage('ข้อมูลไม่ครบถ้วน', 'โปรดกรอกเลขเคสเพื่อตรวจสอบสถานะ', 'info');
+                return;
+            }
+
+            showMessage('กำลังตรวจสอบ...', 'กำลังดึงข้อมูลสถานะรายงาน', 'info');
+
+            try {
+                // Send a POST request to Apps Script to get report status by Case ID
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: 'getReportStatus', caseId: caseId }) // Send action and caseId
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                closeMessageModal(); // Close loading message
+
+                if (result.success && result.report) {
+                    const report = result.report;
+                    const statusText = {
+                        'pending': 'รอดำเนินการ',
+                        'completed': 'ดำเนินการแล้วเสร็จ',
+                        'rejected': 'ถูกปฏิเสธ'
+                    }[report.status] || 'ไม่ทราบสถานะ';
+                    const statusClass = {
+                        'pending': 'badge-pending',
+                        'completed': 'badge-completed',
+                        'rejected': 'badge-rejected'
+                    }[report.status] || '';
+
+                    statusResultDiv.innerHTML = `
+                        <p class="font-bold text-lg mb-2">เลขเคส: ${report.caseId}</p>
+                        <p class="text-gray-700">ประเภทปัญหา: ${report.reportType}</p>
+                        <p class="text-gray-700">รายละเอียด: ${report.reportDescription}</p>
+                        <p class="text-gray-700">สถานะ: <span class="badge ${statusClass}">${statusText}</span></p>
+                        <p class="text-gray-600 text-sm mt-2">ตำแหน่ง: <a href="https://maps.google.com/?q=${report.reportLocation}" target="_blank" class="text-blue-600 hover:underline">${report.reportLocation}</a></p>
+                        ${report.publicImages && report.publicImages.length > 0 ? `
+                            <p class="font-semibold text-gray-700 mt-2">รูปภาพปัญหา:</p>
+                            <div class="image-preview-container mt-1">
+                                ${report.publicImages.map(img => `<img src="${img}" class="image-preview" alt="รูปภาพปัญหา">`).join('')}
+                            </div>
+                        ` : ''}
+                        ${report.resolutionImages && report.resolutionImages.length > 0 ? `
+                            <p class="font-semibold text-gray-700 mt-2">รูปภาพการแก้ไข:</p>
+                            <div class="image-preview-container mt-1">
+                                ${report.resolutionImages.map(img => `<img src="${img}" class="image-preview" alt="รูปภาพการแก้ไข">`).join('')}
+                            </div>
+                        ` : '<p class="text-gray-500 text-sm mt-2">ยังไม่มีรูปภาพการแก้ไข</p>'}
+                    `;
+                    statusResultDiv.classList.remove('hidden');
+                } else {
+                    statusErrorDiv.textContent = result.error || 'ไม่พบเลขเคสนี้ หรือเกิดข้อผิดพลาดในการดึงข้อมูล';
+                    statusErrorDiv.classList.remove('hidden');
+                    showMessage('ไม่พบข้อมูล', result.error || 'ไม่พบเลขเคสนี้', 'warning');
+                }
+
+            } catch (error) {
+                closeMessageModal();
+                statusErrorDiv.textContent = 'เกิดข้อผิดพลาดในการตรวจสอบสถานะ: ' + error.message;
+                statusErrorDiv.classList.remove('hidden');
+                console.error('Error checking status:', error);
+                showMessage('ข้อผิดพลาด', 'ไม่สามารถตรวจสอบสถานะได้: ' + error.message, 'error');
+            }
+        }
+
+
+        // --- Apps Script Integration (Main Report Submission/Update) ---
+        /**
+         * Sends report data to Google Apps Script Web App.
+         * For new reports, Apps Script will generate a Case ID and return it.
+         * For updates, Apps Script will simply update the existing record.
+         * @param {Object} reportData - The report data object to send.
+         */
+        async function sendReportToAppsScript(reportData) {
+            console.log('กำลังส่งข้อมูลรายงานไปยัง Apps Script:', reportData);
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: 'submitReport', report: reportData }) // Wrap data with action
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('การตอบกลับจาก Apps Script:', result);
+
+                if (result.success) {
+                    // If it was a new report and Apps Script returned a caseId
+                    if (reportData.isNewReport && result.caseId) {
+                        // Find the report in local storage by its temporary ID and update with the real caseId
+                        const index = reports.findIndex(r => r.id === reportData.id);
+                        if (index > -1) {
+                            reports[index].caseId = result.caseId;
+                            saveReports(); // Save updated local storage
+                        }
+                        showMessage('บันทึกสำเร็จ', `รายงานของคุณได้รับการบันทึกแล้ว เลขเคสคือ ${result.caseId}`, 'success');
+                    } else {
+                        // For updates or if caseId was already present
+                        // The showMessage for success is already handled in createOrUpdateReport
+                    }
+                } else {
+                    showMessage('เกิดข้อผิดพลาดในการส่งข้อมูล', `ไม่สามารถส่งข้อมูลรายงานได้: ${result.error || 'ไม่ทราบข้อผิดพลาด'}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('เกิดข้อผิดพลาดในการส่งข้อมูลไปยัง Apps Script:', error);
+                showMessage('เกิดข้อผิดพลาดร้ายแรง', `ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้: ${error.message}`, 'error');
+            }
+        }
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check login status from local storage
+            isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            updateUIForUserType(); // Adjust UI based on login status
+            showView('reportFormView'); // Show public report form by default
+            loadReports(); // Load reports from local storage
+        });
+
+        // Expose functions to the global scope for HTML onclick attributes
+        window.showView = showView;
+        window.showMessage = showMessage;
+        window.closeMessageModal = closeMessageModal;
+        window.previewImages = previewImages;
+        window.clearForm = clearForm;
+        window.createOrUpdateReport = createOrUpdateReport;
+        window.editReport = editReport;
+        window.deleteReport = deleteReport;
+        window.sendReportToAppsScript = sendReportToAppsScript;
+        window.handleLogin = handleLogin;
+        window.handleLogout = handleLogout;
+        window.updateUIForUserType = updateUIForUserType;
+        window.getCurrentLocation = getCurrentLocation;
+        window.checkReportStatus = checkReportStatus;
+        window.PROBLEM_TYPE_ABBR = PROBLEM_TYPE_ABBR; // Expose for potential future use or debugging
+    </script>
+</body>
+</html>
